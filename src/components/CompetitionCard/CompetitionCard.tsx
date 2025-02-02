@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
-import keycloak from "../../utils/keycloak.ts";
 import {useNavigate} from "react-router-dom";
 
 import axios from 'axios';
+import {AuthorizeToken} from "../../entities.ts";
 
 interface Props {
     id: string;
@@ -32,12 +32,15 @@ function CompetitionCard(props: Props) {
     const [imageSrc, setImageSrc] = useState<string | null>(null);
 
     useEffect(() => {
+        const item = localStorage.getItem("token");
+        if (item === null) return; // not login
+        const token: AuthorizeToken = JSON.parse(item);
         const fetchImage = async () => {
             try {
                 const reqUrl = `/api/competition/thumbnail?id=${props.id}`
                 const response = await axios.get(reqUrl, {
                     headers: {
-                        'Authorization': `Bearer ${keycloak.token}`,
+                        'Authorization': `Bearer ${token.token}`,
                     },
                     responseType: 'blob', // 确保获取的是 blob 类型数据
                 });
@@ -59,7 +62,7 @@ function CompetitionCard(props: Props) {
 
     return (<>
         <div
-            className="max-w-sm rounded-lg shadow-lg backdrop-blur dark:bg-neutral-500 overflow-hidden bg-opacity-30 hover:scale-105 cursor-pointer transition-all duration-300"
+            className="max-w-sm rounded-lg shadow-lg backdrop-blur overflow-hidden bg-opacity-30 hover:scale-105 cursor-pointer transition-all duration-300"
             onClick={handleClick}
         >
             <div className="p-4">

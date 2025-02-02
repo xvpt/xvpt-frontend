@@ -1,6 +1,6 @@
 import {useParams} from "react-router-dom";
 
-function CompetitionInfo() {
+function CompetitionPage() {
     const { id } = useParams();
 
     return (<>
@@ -8,4 +8,4 @@ function CompetitionInfo() {
     </>);
 }
 
-export default CompetitionInfo;
+export default CompetitionPage;

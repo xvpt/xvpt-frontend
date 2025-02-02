@@ -1,25 +1,21 @@
 import {Link, useNavigate} from "react-router-dom";
-import keycloak from "../../utils/keycloak.ts";
 import {useEffect, useState} from "react";
-import {KeycloakProfile} from "keycloak-js";
+import {AuthorizeToken} from "../../entities.ts";
 
 function Navbar() {
-    const [profile, setProfile] = useState<KeycloakProfile | null>(null);
+    const [username, setUsername] = useState<string | null>()
     const navigate = useNavigate();
 
+    const navigateToUser = () => {
+        navigate('/user');
+    }
+
     useEffect(() => {
-        if (keycloak.authenticated) {
-            // 加载用户资料
-            keycloak.loadUserProfile()
-                .then((profileData) => {
-                    setProfile(profileData);
-                    navigate("/");
-                })
-                .catch((error) => {
-                    console.error("Failed to load user profile:", error);
-                });
-        }
-    }, [keycloak]);
+        const item = localStorage.getItem("token");
+        if (item === null) return; // not login
+        const token: AuthorizeToken = JSON.parse(item);
+        setUsername(token.username);
+    }, []);
 
     return (<>
         <nav className="shadow-2xl  p-4">
@@ -27,7 +23,7 @@ function Navbar() {
                 <div className="text-2xl font-bold">🍍XVPT</div>
                 <div className="space-x-6">
                     <Link to="/" className="hover:text-blue-300">主页</Link>
-                    <Link to="/user" className="hover:text-blue-300">{profile?.username}</Link>
+                    {username && <Link to="/user" className="hover:text-blue-300" onClick={navigateToUser}>{username}</Link>}
                 </div>
             </div>
         </nav>
